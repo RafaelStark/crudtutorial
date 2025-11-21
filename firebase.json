@@ -1,1 +1,42 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"crudtutorial-72902","appId":"1:1651191256:android:cfee061aaf0bc8ba7916ad","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"crudtutorial-72902","configurations":{"android":"1:1651191256:android:cfee061aaf0bc8ba7916ad","ios":"1:1651191256:ios:6f8ba0b40d23dd7d7916ad","macos":"1:1651191256:ios:6f8ba0b40d23dd7d7916ad","web":"1:1651191256:web:1b911c2b121312cb7916ad","windows":"1:1651191256:web:05330aa71476569e7916ad"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "crudtutorial-72902",
+          "appId": "1:1651191256:android:cfee061aaf0bc8ba7916ad",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "crudtutorial-72902",
+          "configurations": {
+            "android": "1:1651191256:android:cfee061aaf0bc8ba7916ad",
+            "ios": "1:1651191256:ios:6f8ba0b40d23dd7d7916ad",
+            "macos": "1:1651191256:ios:6f8ba0b40d23dd7d7916ad",
+            "web": "1:1651191256:web:1b911c2b121312cb7916ad",
+            "windows": "1:1651191256:web:05330aa71476569e7916ad"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}

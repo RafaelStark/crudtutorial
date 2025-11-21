@@ -10,6 +10,7 @@ class FirestoreClientes {
   // ======================================================
   Future<void> addCliente({
     required String cnpj,
+    required String ie,
     required String razaoSocial,
     required String nomeFantasia,
     required String email,
@@ -23,6 +24,7 @@ class FirestoreClientes {
   }) {
     return clientes.add({
       'cnpj': cnpj,
+      'ie': ie,
       'razaoSocial': razaoSocial,
       'nomeFantasia': nomeFantasia,
       'email': email,
@@ -50,6 +52,7 @@ class FirestoreClientes {
   Future<void> updateCliente(
       String docID, {
         required String cnpj,
+        required String ie,
         required String razaoSocial,
         required String nomeFantasia,
         required String email,
@@ -63,6 +66,7 @@ class FirestoreClientes {
       }) {
     return clientes.doc(docID).update({
       'cnpj': cnpj,
+      'ie': ie,
       'razaoSocial': razaoSocial,
       'nomeFantasia': nomeFantasia,
       'email': email,
