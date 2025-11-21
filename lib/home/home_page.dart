@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../services/clientes_service.dart';
+import '../features/clientes/services/clientes_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
