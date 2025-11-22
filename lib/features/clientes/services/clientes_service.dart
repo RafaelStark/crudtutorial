@@ -1,14 +1,15 @@
+// lib/features/clientes/services/clientes_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreClientes {
-  // Referência para a coleção "clientes"
-  final CollectionReference clientes =
-  FirebaseFirestore.instance.collection('clientes');
+  final CollectionReference<Map<String, dynamic>> clientes =
+  FirebaseFirestore.instance.collection('clientes').withConverter<Map<String,dynamic>>(
+    fromFirestore: (snap, _) => snap.data() ?? <String,dynamic>{},
+    toFirestore: (map, _) => map,
+  );
 
-  // ======================================================
-  // CREATE – Adicionar novo cliente
-  // ======================================================
-  Future<void> addCliente({
+  /// Adicionar novo cliente. Retorna DocumentReference para pegar ID.
+  Future<DocumentReference<Map<String, dynamic>>> addCliente({
     required String cnpj,
     required String ie,
     required String razaoSocial,
@@ -39,16 +40,12 @@ class FirestoreClientes {
     });
   }
 
-  // ======================================================
-  // READ – Ler todos os clientes
-  // ======================================================
-  Stream<QuerySnapshot> getClientesStream() {
+  /// Stream de clientes
+  Stream<QuerySnapshot<Map<String, dynamic>>> getClientesStream() {
     return clientes.orderBy('timestamp', descending: true).snapshots();
   }
 
-  // ======================================================
-  // UPDATE – Atualizar cliente
-  // ======================================================
+  /// Atualiza cliente existente
   Future<void> updateCliente(
       String docID, {
         required String cnpj,
@@ -81,9 +78,7 @@ class FirestoreClientes {
     });
   }
 
-  // ======================================================
-  // DELETE – Excluir cliente
-  // ======================================================
+  /// Deleta cliente
   Future<void> deleteCliente(String docID) {
     return clientes.doc(docID).delete();
   }
