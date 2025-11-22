@@ -75,7 +75,7 @@ class SideMenu extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.all(16),
             child: Text(
-              "© 2025 Pequena Flor Papelaria",
+              "© 2025 R A Representações",
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           )
