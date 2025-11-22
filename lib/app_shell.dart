@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'features/dashboard/pages/dashboard_page.dart';
 import 'features/clientes/pages/clientes_page.dart';
+import 'features/transportadoras/pages/transportadoras_page.dart';
 
 import 'core/widgets/side_menu.dart';
 
@@ -20,7 +21,7 @@ class _AppShellState extends State<AppShell> {
     ClientesPage(),
     Placeholder(), // fornecedores
     Placeholder(), // pedidos
-    Placeholder(), // transportadoras
+    TransportadorasPage(), // transportadoras
   ];
 
   void onMenuSelect(int index) {

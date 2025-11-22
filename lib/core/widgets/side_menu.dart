@@ -13,9 +13,9 @@ class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 250,
+      width: 220,
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 30),
       child: Column(
         children: [
           // Avatar + nome empresa
@@ -23,13 +23,13 @@ class SideMenu extends StatelessWidget {
             radius: 40,
             backgroundColor: Colors.blue,
             child: Text(
-              "PF", // Pequena Flor Papelaria
+              "R A", // R A Representações
               style: TextStyle(fontSize: 28, color: Colors.white),
             ),
           ),
           const SizedBox(height: 12),
           const Text(
-            "Pequena Flor",
+            "R A Representações",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
