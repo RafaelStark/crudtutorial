@@ -54,7 +54,7 @@ class SideMenu extends StatelessWidget {
                 _menuItem(
                   index: 2,
                   icon: Icons.storefront,
-                  label: "Fornecedores",
+                  label: "Representadas",
                 ),
                 _menuItem(
                   index: 3,

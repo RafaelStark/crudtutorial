@@ -1,13 +1,11 @@
 // lib/features/clientes/pages/clientes_page.dart
+import 'package:crudtutorial/core/widgets/custom_add_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../services/clientes_service.dart';
 import 'cliente_form_page.dart';
 import '../widgets/cliente_dashboard.dart';
-
-//Importar botoes
-import 'package:crudtutorial/features/clientes/widgets/app_button.dart';
 
 // Estado de visualização
 enum ClientesView { list, dashboard, form }
@@ -112,13 +110,10 @@ class _ClientesPageState extends State<ClientesPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: AppButton(
-                  text: "Adicionar Cliente",
-                  icon: Icons.add,
-                  onPressed: () => _openForm(),
-                ),
+              CustomAddButton(
+                label: "Adicionar Cliente",
+                icon: Icons.add,
+                onPressed: () => _openForm(),
               ),
             ]),
             const SizedBox(height: 14),

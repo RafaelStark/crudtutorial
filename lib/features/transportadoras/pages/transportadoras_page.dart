@@ -1,10 +1,8 @@
+import 'package:crudtutorial/core/widgets/custom_add_button.dart';
 import 'package:flutter/material.dart';
 import '../widgets/transportadora_list.dart';
 import 'transportadora_form_page.dart';
 import 'transportadora_detalhe_page.dart';
-
-//Importar botoes
-import 'package:crudtutorial/features/clientes/widgets/app_button.dart';
 
 enum TransportadorasView { list, form, detalhe }
 
@@ -59,10 +57,10 @@ class _TransportadorasPageState extends State<TransportadorasPage> {
                   const Text("Transportadoras",
                       style:
                       TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  ElevatedButton.icon(
+                  CustomAddButton(
                     onPressed: _openForm,
-                    icon: const Icon(Icons.add),
-                    label: const Text("Nova"),
+                    icon: Icons.add,
+                    label: "Nova Transportadora",
                   ),
                 ],
               ),

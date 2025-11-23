@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../services/transportadora_service.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
-
 class TransportadoraFormPage extends StatefulWidget {
   final VoidCallback onBack;
+  final Map<String, dynamic>? editData; // dados da transportadora para edição
   final String? editId;
 
-  const TransportadoraFormPage({super.key, required this.onBack, this.editId});
+  const TransportadoraFormPage({super.key, required this.onBack, this.editData, this.editId});
 
   @override
   State<TransportadoraFormPage> createState() => _TransportadoraFormPageState();
@@ -17,36 +17,41 @@ class _TransportadoraFormPageState extends State<TransportadoraFormPage> {
   final _formKey = GlobalKey<FormState>();
   final service = TransportadoraService();
 
-  String cnpj = "";
-  String razao = "";
-  String fantasia = "";
-  String cidade = "";
-  String estado = "";
+  late MaskedTextController cnpjController;
+  final razaoController = TextEditingController();
+  final fantasiaController = TextEditingController();
+  final cidadeController = TextEditingController();
+  final estadoController = TextEditingController();
+  final telController = MaskedTextController(mask: '(00) 00000-0000');
+
   List<String> telefones = [];
   List<Map<String, String>> filiais = [];
-
-  final cnpjController = MaskedTextController(mask: '00.000.000/0000-00');
-  final telController = MaskedTextController(mask: '(00) 00000-0000');
 
   @override
   void initState() {
     super.initState();
-    if (widget.editId != null) {
-      _loadData(widget.editId!);
+    cnpjController = MaskedTextController(mask: '00.000.000/0000-00');
+
+    if (widget.editData != null) {
+      _loadData(widget.editData!);
     }
   }
 
-  void _loadData(String id) async {
-    final data = await service.getTransportadoraById(id);
-    setState(() {
-      cnpj = data['cnpj'];
-      razao = data['razao_social'];
-      fantasia = data['nome_fantasia'];
-      cidade = data['cidade'];
-      estado = data['estado'];
-      telefones = List<String>.from(data['telefones'] ?? []);
-      filiais = List<Map<String, String>>.from(data['filiais'] ?? []);
-    });
+  void _loadData(Map<String, dynamic> data) {
+    cnpjController.text = data['cnpj'] ?? '';
+    razaoController.text = data['razao_social'] ?? '';
+    fantasiaController.text = data['nome_fantasia'] ?? '';
+    cidadeController.text = data['cidade'] ?? '';
+    estadoController.text = data['estado'] ?? '';
+    telefones = List<String>.from(data['telefones'] ?? []);
+
+    // Corrige LinkedMap para Map<String, String>
+    filiais = (data['filiais'] as List<dynamic>?)
+        ?.map((f) => Map<String, String>.from(f as Map))
+        .toList() ??
+        [];
+
+    setState(() {});
   }
 
   @override
@@ -62,31 +67,26 @@ class _TransportadoraFormPageState extends State<TransportadoraFormPage> {
               controller: cnpjController,
               decoration: const InputDecoration(labelText: "CNPJ"),
               validator: (v) => v!.isEmpty ? "Preencha o CNPJ" : null,
-              onSaved: (v) => cnpj = v!,
             ),
             TextFormField(
-              initialValue: razao,
+              controller: razaoController,
               decoration: const InputDecoration(labelText: "Razão Social"),
               validator: (v) => v!.isEmpty ? "Preencha a razão social" : null,
-              onSaved: (v) => razao = v!,
             ),
             TextFormField(
-              initialValue: fantasia,
+              controller: fantasiaController,
               decoration: const InputDecoration(labelText: "Nome Fantasia"),
               validator: (v) => v!.isEmpty ? "Preencha o nome fantasia" : null,
-              onSaved: (v) => fantasia = v!,
             ),
             TextFormField(
-              initialValue: cidade,
+              controller: cidadeController,
               decoration: const InputDecoration(labelText: "Cidade"),
               validator: (v) => v!.isEmpty ? "Preencha a cidade" : null,
-              onSaved: (v) => cidade = v!,
             ),
             TextFormField(
-              initialValue: estado,
+              controller: estadoController,
               decoration: const InputDecoration(labelText: "Estado"),
               validator: (v) => v!.isEmpty ? "Preencha o estado" : null,
-              onSaved: (v) => estado = v!,
             ),
             const SizedBox(height: 20),
             const Text("Telefones", style: TextStyle(fontSize: 18)),
@@ -154,19 +154,22 @@ class _TransportadoraFormPageState extends State<TransportadoraFormPage> {
 
   void _salvar() async {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      String id = widget.editId ??
-          await service.addTransportadora({
-            "cnpj": cnpjController.text,
-            "razao_social": razao,
-            "nome_fantasia": fantasia,
-            "cidade": cidade,
-            "estado": estado,
-            "telefones": telefones,
-          });
+      Map<String, dynamic> dados = {
+        "cnpj": cnpjController.text,
+        "razao_social": razaoController.text,
+        "nome_fantasia": fantasiaController.text,
+        "cidade": cidadeController.text,
+        "estado": estadoController.text,
+        "telefones": telefones,
+      };
 
-      for (var f in filiais) {
-        await service.addFilial(id, f);
+      if (widget.editId != null) {
+        await service.updateTransportadora(widget.editId!, dados);
+      } else {
+        String id = await service.addTransportadora(dados);
+        for (var f in filiais) {
+          await service.addFilial(id, f);
+        }
       }
 
       widget.onBack();
@@ -186,18 +189,29 @@ class _TransportadoraFormPageState extends State<TransportadoraFormPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(decoration: const InputDecoration(labelText: "CNPJ"), onChanged: (v) => a = v),
-            TextField(decoration: const InputDecoration(labelText: "Cidade"), onChanged: (v) => c = v),
-            TextField(decoration: const InputDecoration(labelText: "Estado"), onChanged: (v) => e = v),
-            TextField(decoration: const InputDecoration(labelText: "Telefone"), onChanged: (v) => t = v),
+            TextField(
+                decoration: const InputDecoration(labelText: "CNPJ"),
+                onChanged: (v) => a = v),
+            TextField(
+                decoration: const InputDecoration(labelText: "Cidade"),
+                onChanged: (v) => c = v),
+            TextField(
+                decoration: const InputDecoration(labelText: "Estado"),
+                onChanged: (v) => e = v),
+            TextField(
+                decoration: const InputDecoration(labelText: "Telefone"),
+                onChanged: (v) => t = v),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancelar")),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancelar")),
           ElevatedButton(
             onPressed: () {
               if (c.isNotEmpty && e.isNotEmpty && t.isNotEmpty) {
-                setState(() => filiais.add({"cnpj": a,"cidade": c, "estado": e, "telefone": t}));
+                setState(
+                        () => filiais.add({"cnpj": a, "cidade": c, "estado": e, "telefone": t}));
                 Navigator.pop(context);
               }
             },
