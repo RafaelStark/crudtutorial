@@ -44,6 +44,34 @@ class RepresentadasService {
     }
   }
 
+  // Novo: Upload de imagens de produtos (lista)
+  Future<List<String>> uploadImagensProduto(List<XFile> files, String representadaId, String produtoId) async {
+    List<String> urls = [];
+    
+    for (var i = 0; i < files.length; i++) {
+      final file = files[i];
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final ref = storage.ref().child('representadas/$representadaId/produtos/$produtoId/img_${timestamp}_$i.jpg');
+      
+      try {
+        if (kIsWeb) {
+          final bytes = await file.readAsBytes();
+          final metadata = SettableMetadata(
+            contentType: file.mimeType ?? 'image/jpeg',
+          );
+          await ref.putData(bytes, metadata);
+        } else {
+          await ref.putFile(File(file.path));
+        }
+        final url = await ref.getDownloadURL();
+        urls.add(url);
+      } catch (e) {
+        print('Erro ao fazer upload de imagem do produto: $e');
+      }
+    }
+    return urls;
+  }
+
   Future<void> salvarRepresentada(Map<String, dynamic> data, {String? id}) async {
     final ref = firestore.collection('representadas');
     
@@ -58,8 +86,6 @@ class RepresentadasService {
          data['imagem'] = url;
        } catch (e) {
          print("Erro ao fazer upload da imagem: $e");
-         // Podemos optar por continuar sem a imagem ou lançar o erro
-         // throw e; 
        }
        data.remove('imagemFile');
        
@@ -140,8 +166,42 @@ class RepresentadasService {
       data['multiploVenda'] = 1;
     }
 
+    // Tratamento de Imagens
+    List<String> imagensUrls = [];
+    if (data['imagens'] is List) {
+      // Mantém URLs já existentes
+      imagensUrls = List<String>.from(data['imagens'].where((i) => i is String));
+    }
+
+    // Se houver novos arquivos para upload
+    if (data.containsKey('novasImagensFiles') && data['novasImagensFiles'] != null) {
+      final files = data['novasImagensFiles'] as List<XFile>;
+      if (files.isNotEmpty) {
+        // Precisamos de um ID para o produto para criar a pasta no storage
+        final docId = produtoId ?? ref.doc().id;
+        
+        final novasUrls = await uploadImagensProduto(files, representadaId, docId);
+        imagensUrls.addAll(novasUrls);
+        
+        // Se for um novo produto, precisamos garantir que usaremos o docId gerado
+        if (produtoId == null) {
+          data['id'] = docId; // Marca o ID para usar no set() em vez de add()
+        }
+      }
+      data.remove('novasImagensFiles');
+    }
+    
+    data['imagens'] = imagensUrls;
+
     if (produtoId == null) {
-      await ref.add(data);
+      if (data.containsKey('id')) {
+        // Caso tenhamos gerado ID para upload de imagem antes de criar
+        final newId = data['id'];
+        data.remove('id');
+        await ref.doc(newId).set(data);
+      } else {
+        await ref.add(data);
+      }
     } else {
       await ref.doc(produtoId).update(data);
     }

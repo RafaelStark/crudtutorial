@@ -4,6 +4,7 @@ import 'features/dashboard/pages/dashboard_page.dart';
 import 'features/clientes/pages/clientes_page.dart';
 import 'features/representadas/pages/representadas_page.dart';
 import 'features/transportadoras/pages/transportadoras_page.dart';
+import 'features/pedidos/pages/pedidos_page.dart';
 
 import 'core/widgets/side_menu.dart';
 
@@ -31,7 +32,7 @@ class _AppShellState extends State<AppShell> {
     DashboardPage(),
     ClientesPage(),
     RepresentadasPage(), // representadas
-    Placeholder(), // pedidos
+    PedidosPage(), // pedidos
     TransportadorasPage(), // transportadoras
   ];
 

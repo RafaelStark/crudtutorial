@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crudtutorial/app_shell.dart';
 import 'package:crudtutorial/core/widgets/custom_add_button.dart';
 import 'package:crudtutorial/features/representadas/pages/representada_form_page.dart';
+import 'package:crudtutorial/features/representadas/pages/representada_detalhe_page.dart';
 import 'package:flutter/material.dart';
 
 import '../services/representadas_service.dart';
@@ -107,70 +108,86 @@ class _RepresentadasPageState extends State<RepresentadasPage> {
 
                     return Card(
                       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: ListTile(
-                        leading: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.grey[200],
-                          ),
-                          child: imagemUrl != null && imagemUrl.toString().isNotEmpty
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    imagemUrl,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (c, e, s) => const Icon(Icons.broken_image, color: Colors.grey),
-                                  ),
-                                )
-                              : const Icon(Icons.image, color: Colors.grey),
-                        ),
-                        title: Text(nome),
-                        subtitle: Text(data['cnpj'] ?? ''),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => AppShell(
-                                      initialIndex: 2, // Índice de Representadas
-                                      child: RepresentadaFormPage(representadaId: id, data: data),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AppShell(
+                                initialIndex: 2, // Mantém o menu selecionado
+                                child: RepresentadaDetalhePage(
+                                  representadaId: id,
+                                  dadosRepresentada: data,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: ListTile(
+                          leading: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.grey[200],
+                            ),
+                            child: imagemUrl != null && imagemUrl.toString().isNotEmpty
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      imagemUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (c, e, s) => const Icon(Icons.broken_image, color: Colors.grey),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    title: const Text('Excluir Representada'),
-                                    content: const Text('Tem certeza que deseja excluir esta representada?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx),
-                                        child: const Text('Cancelar'),
+                                  )
+                                : const Icon(Icons.image, color: Colors.grey),
+                          ),
+                          title: Text(nome),
+                          subtitle: Text(data['cnpj'] ?? ''),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => AppShell(
+                                        initialIndex: 2, // Índice de Representadas
+                                        child: RepresentadaFormPage(representadaId: id, data: data),
                                       ),
-                                      TextButton(
-                                        onPressed: () {
-                                          service.excluirRepresentada(id);
-                                          Navigator.pop(ctx);
-                                        },
-                                        child: const Text('Excluir'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: const Text('Excluir Representada'),
+                                      content: const Text('Tem certeza que deseja excluir esta representada?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(ctx),
+                                          child: const Text('Cancelar'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            service.excluirRepresentada(id);
+                                            Navigator.pop(ctx);
+                                          },
+                                          child: const Text('Excluir'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
